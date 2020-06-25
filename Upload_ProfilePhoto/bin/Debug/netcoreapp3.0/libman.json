@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "kendo-ui-core@2014.1.416",
+      "destination": "wwwroot/kendo-ui-core/"
+    },
+    //{
+    //  "provider": "unpkg",
+    //  "library": "@microsoft/signalr@latest",
+    //  "destination": "wwwroot/@microsoft/signalr/"
+    //}
+    //{
+    //  "library": "microsoft-signalr@5.0.0-preview.5.20279.2",
+    //  "destination": "wwwroot/microsoft-signalr/"
+    //},
+    //{
+    //  "library": "signalr.js@2.4.1",
+    //  "destination": "wwwroot/signalr.js/"
+    //}
+  ]
+}

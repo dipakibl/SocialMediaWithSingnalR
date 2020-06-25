@@ -1,0 +1,187 @@
+﻿@model Upload_ProfilePhoto.Models.Comman
+@{
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    ViewData["Title"] = "Home";
+}
+<style>
+
+    .imgstyle {
+        height: 50px;
+        width: 50px;
+        margin: 2px 0px 0px;
+    }
+
+    .likeclass {
+        color: red !important;
+    }
+
+    .unlikeclass {
+        color: #212529;
+    }
+</style>
+<main>
+    <div class="main-section">
+        <div class="container">
+            <div class="main-section-data">
+                <div class="row">
+                    <div class="col-lg-3 col-md-4 pd-left-none no-pd">
+                        <div class="main-left-sidebar no-margin">
+                            <div class="user-data full-width">
+                                <div class="user-profile" id="userprofile">
+                                </div>
+                                <ul class="user-fw-status">
+                                    <li>
+                                        <h4>Following</h4>
+                                        <span>34</span>
+                                    </li>
+                                    <li>
+                                        <h4>Followers</h4>
+                                        <span>155</span>
+                                    </li>
+                                    <li>
+                                        <a href="https://localhost:44329/Home/Profile" title="">View Profile</a>
+                                    </li>
+                                </ul>
+                            </div><!--user-data end-->
+                        </div><!--main-left-sidebar end-->
+                    </div>
+                    <div class="col-lg-6 col-md-8 no-pd">
+                        <div class="main-ws-sec">
+                            <div class="posts-section" id="myimages">
+
+                            </div><!--posty end-->
+                            <!--post-bar end-->
+                        </div><!--posts-section end-->
+                    </div><!--main-ws-sec end-->
+                </div>
+            </div>
+        </div><!-- main-section-data end-->
+    </div>
+</main>
+<link href="~/lib/toastr.js/toastr.css" rel="stylesheet" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/toastr.js/toastr.min.js"></script>
+<script>
+    $(document).ready(function () {
+        showprofiles();
+        GetAllLiker();
+        CurrentPrifile();
+    });
+    function showprofiles() {
+        $.ajax({
+            type: 'Get',
+            url: '/Home/GetAllPicture',
+            dataType: 'json',
+            success: function (result) {
+                $.each(result, function (i, l) {
+                    $("#myimages").append('<div class="post-bar"><div class="post_topbar"><div class="usy-dt"><img class="imgstyle" src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt=""><div class="usy-name"><h3>' + l.first_Name + ' ' + l.last_Name + '</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt="">3 min ago</span></div></div></div><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" /><div class="job-status-bar"><ul class="like-com"><li><a  id="likeid' + l.picureid + '" class="unlikeclass"  onclick="LikeProce(' + l.picureid + ')"><i class="fas fa-heart"></i> Like</a><img src="https://localhost:44329/temp/images/liked-img.png" alt=""><span id="' + l.picureid + '"></span></li><li  onclick="MessageBox('+l.picureid+')"><a class="com" id="MessageBox"><i class="fas fa-comment-alt"></i> Comment 15</a></li></ul></div><div id="commentsection'+l.picureid+'" style="display: none;" class="comment-section"><hr style="border-top: 3px solid #e5e5e5 !important;"><div class="comment-sec"><ul><li><div class="comment-list"><div class="bg-img"><img src="https://localhost:44329/temp/images/resources/bg-img3.png" alt=""></div><div class="comment"><h3>John Doe</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt=""> 3 min ago</span><p>Very Nice Pic.</p><a href="#" title=""><i class="fa fa-reply-all"></i>Reply</a></div></div></li></ul></div><div class="post-comment"><div class="cm_img"><img src="https://localhost:44329/temp/images/resources/bg-img4.png" alt=""></div><div class="comment_box"><form><input type="hidden" id="txtpictureid'+l.picureid+'" value="'+l.picureid+'" /><input type="text" id="txtComment'+l.picureid+'" placeholder="Post a comment"  style="width: 320px;"><button type="button" onclick="SendComment('+l.picureid+')">Send</button></form></div></div></div>')
+                })
+
+            }
+        });
+    }
+    function CurrentPrifile() {
+        $.ajax({
+            type: 'Get',
+            url: '/Home/LoggedUserProfile',
+            dataType: 'json',
+            success: function (result) {
+                $("#userprofile").append('<div class="username-dt"><div class="usr-pic"><img style="height:110px; width:110px;" src="https://localhost:44329/ProfilePhoto/' + result.currentProfile + '" alt=""></div></div><div class="user-specs"><h3>' + result.first_Name + '' + result.last_Name + '</h3><span>' + result.email + '</span></div>')
+
+            }
+        });
+    }
+    function LikeProce(id) {
+        var likestf;
+        $('#likeid' + id).toggleClass('likeclass unlikeclass');
+        var yourClass = $('#likeid' + id).prop("class");
+        if (yourClass == "likeclass") {
+            likestf = true;
+        }
+        else if (yourClass == "unlikeclass") {
+            likestf = false;
+        }
+        $.ajax({
+            async: true,
+            type: "POST",
+            url: '/Home/Like',
+            data: {
+                pictureid: id,
+                like: likestf
+            },
+            success: function (result) {
+                GetAllLiker();
+                if (result != 0) {
+                    // Notification(result);
+                }
+
+            },
+            error: function () {
+            }
+        });
+
+    }
+    function GetAllLiker() {
+        $.ajax({
+            type: 'Get',
+            url: '/Home/GetAllLIker',
+            dataType: 'json',
+            success: function (result) {
+                $.each(result, function (i, l) {
+                    $('#' + l.pictureId).text(l.totalLIkes);
+                    if (l.currUserLike) {
+                        var yourClass = $('#likeid' + l.pictureId).prop("class");
+                        $('#likeid' + l.pictureId).removeClass(yourClass).addClass('likeclass');
+                    }
+                })
+
+            }
+        });
+    }
+    //function Notification(id) {
+    //    $.ajax({
+    //        async: true,
+    //        type: "POST",
+    //        url: '/Home/Notification',
+    //        data: {
+    //            pictureid: id,
+    //        },
+    //        success: function (result) {
+
+    //        },
+    //        error: function () {
+    //        }
+    //    });
+    //}
+
+   
+    function MessageBox(id) {
+        $("#commentsection"+id).toggle();
+    }
+    function SendComment(id) {
+        var Comment = $('#txtComment'+id).val(); 
+        var Pictureid = $('#txtpictureid'+id).val();
+         $.ajax({
+            async: true,
+            type: "POST",
+            url: '/Home/SendComment',
+            data: {
+                comments: Comment,
+                pictureid: Pictureid
+            },
+            success: function (result) {
+                GetAllLiker();
+                if (result != 0) {
+                    // Notification(result);
+                }
+
+            },
+            error: function () {
+            }
+        });
+    }
+</script>
+@*<div class="post-bar"><div class="post_topbar"><div class="usy-dt"><img src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt=""><div class="usy-name"><h3>' + l.first_Name + ' ' + l.last_Name + '</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt="">3 min ago</span></div></div></div><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" /><div class="job-status-bar"><ul class="like-com"><li><a href="#"><i class="fas fa-heart"></i> Like</a><img src="https://localhost:44329/temp/images/liked-img.png" alt=""><span>25</span></li></ul></div></div>*@
+
+
+@*<div class="comment-section"><a href="#" class="plus-ic"><i class="la la-plus"></i></a><div class="comment-sec"><ul><li><div class="comment-list"><div class="bg-img"><img src="~/temp/images/resources/bg-img3.png" alt=""></div><div class="comment"><h3>John Doe</h3><span><img src="~/temp/images/clock.png" alt=""> 3 min ago</span><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam luctus hendrerit metus, ut ullamcorper quam finibus at.</p><a href="#" title=""><i class="fa fa-reply-all"></i>Reply</a></div></div></li></ul></div><div class="post-comment"><div class="cm_img"><img src="~/temp/images/resources/bg-img4.png" alt=""></div><div class="comment_box"><form><input type="text" placeholder="Post a comment"><button type="submit">Send</button></form></div></div></div>*@

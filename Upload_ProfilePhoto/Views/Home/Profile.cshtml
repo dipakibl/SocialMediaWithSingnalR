@@ -1,0 +1,172 @@
+﻿@model Upload_ProfilePhoto.Models.Comman
+@{
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    ViewData["Title"] = "Profile";
+}
+<style>
+
+    .imgstyle {
+        height: 50px;
+        width: 50px;
+        margin: 2px 0px 0px;
+    }
+
+    .likeclass {
+        color: red !important;
+    }
+
+    .unlikeclass {
+        color: #212529;
+    }
+</style>
+<section class="cover-sec">
+    <img src="~/temp/images/resources/cover-img.jpg" alt="">
+    <div class="add-pic-box">
+        <div class="container">
+            <div class="row no-gutters">
+                <div class="col-lg-12 col-sm-12">
+                    @*<input type="file" id="file">*@
+                    @*<label for="file">Change Image</label>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<form role="form" id="target" method="post" , enctype="multipart/form-data">
+    <main>
+        <div class="main-section">
+            <div class="container">
+                <div class="main-section-data">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="main-left-sidebar">
+                                <div class="user_profile">
+                                    <div class="user-pro-img">
+                                        <img src="~/ProfilePhoto/@Model.PictureName" style="height:210px; width:210px;" alt="" id="output">
+                                        <div class="add-dp" id="OpenImgUpload">
+                                            <input type="file" name="somename" accept="image/*" required="required" id="file" onchange="loadFile(event)" />
+                                            <label for="file"><i class="fas fa-camera"></i></label>
+                                        </div>
+                                    </div><!--user-pro-img end-->
+                                    <div id="btnshow">
+
+                                    </div>
+                                </div><!--user_profile end-->
+                            </div><!--main-left-sidebar end-->
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="main-ws-sec">
+                                <div class="user-tab-sec rewivew">
+                                    <h3>@Model.First_Name @Model.Last_Name</h3>
+                                    <div class="star-descp">
+                                        <span>@Model.Email</span>
+                                        <p id="user"></p>
+                                    </div><!--star-descp end-->
+                                </div><!--user-tab-sec end-->
+                                <div id="myimages">
+
+                                </div>
+                                <!--product-feed-tab end-->
+
+                            </div><!--main-ws-sec end-->
+                        </div>
+                    </div>
+                </div><!-- main-section-data end-->
+            </div>
+        </div>
+
+    </main>
+</form>
+
+<link href="~/lib/toastr.js/toastr.css" rel="stylesheet" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/toastr.js/toastr.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#btnshow").text('');
+        showprofiles();
+        GetAllLiker();
+    })
+
+    function showprofiles() {
+        $.ajax({
+            type: 'Get',
+            url: '/Home/GetMyPicture',
+            dataType: 'json',
+            success: function (result) {
+                $.each(result, function (i, l) {
+                    $("#myimages").append('<div class="product-feed-tab current" id="feed-dd"><div class="posts-section"><div class="post-bar"><div class="post_topbar"><div class="usy-dt"><img class="imgstyle" src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt=""><div class="usy-name"><h3>' + l.first_Name + ' ' + l.last_Name + '</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt="">3 min ago</span></div></div></div><div class="job_descp"><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" /></div><div class="job-status-bar"><ul class="like-com"><li><a  id="likeid' + l.picureid + '" class="unlikeclass"  onclick="LikeProce(' + l.picureid + ')"><i class="fas fa-heart"></i> Like</a><img src="https://localhost:44329/temp/images/liked-img.png" alt=""><span id="' + l.picureid + '"></span></li></ul></div></div></div></div>')
+                })
+
+            }
+        });
+    }
+    var loadFile = function (event) {
+        $("#btnshow").text('');
+        var image = document.getElementById('output');
+        image.src = URL.createObjectURL(event.target.files[0]);
+        if (image != null) {
+            $("#btnshow").append('<button type="submit" class="btn btn-primary button">Save Profile Picture</button>');
+        }
+    };
+    function LikeProce(id) {
+        var likestf;
+        $('#likeid' + id).toggleClass('likeclass unlikeclass');
+        var yourClass = $('#likeid' + id).prop("class");
+        if (yourClass == "likeclass") {
+            likestf = true;
+        }
+        else if (yourClass == "unlikeclass") {
+            likestf = false;
+        }
+        $.ajax({
+            async: true,
+            type: "POST",
+            url: '/Home/Like',
+            data: {
+                pictureid: id,
+                like: likestf
+            },
+            success: function (result) {
+                GetAllLiker();
+            },
+            error: function () {
+            }
+        });
+
+    }
+    function GetAllLiker() {
+        $.ajax({
+            type: 'Get',
+            url: '/Home/GetAllLIker',
+            dataType: 'json',
+            success: function (result) {
+                $.each(result, function (i, l) {
+                    $('#' + l.pictureId).text(l.totalLIkes);
+                    if (l.currUserLike) {
+                        var yourClass = $('#likeid' + l.pictureId).prop("class");
+                        $('#likeid' + l.pictureId).removeClass(yourClass).addClass('likeclass');
+                    }
+                    //currUserLike
+                    //pictureId
+                    //totalLIkes
+                })
+
+            }
+        });
+    }
+</script>
+
+@if (ViewBag.Sucess == "Profile Save Successfull..!")
+{
+    <script>
+        toastr.success("Profile Save Successfull..!");
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
+}
+
+@*<div class="product-feed-tab current" id="feed-dd"><div class="posts-section"><div class="post-bar"><div class="post_topbar"><div class="usy-dt"><img src="~/temp/images/resources/us-pic.png" alt=""><div class="usy-name"><h3>John Doe</h3><span><img src="~/temp/images/clock.png" alt="">3 min ago</span></div></div></div><div class="job_descp"><h3>Senior Wordpress Developer</h3><img src="~/ProfilePhoto/26091d72e21e419ba2cdd9875898ffa5.jpg" /></div><div class="job-status-bar"><ul class="like-com"><li><a href="#"><i class="fas fa-heart"></i> Like</a><img src="~/temp/images/liked-img.png" alt=""><span>25</span></li></ul></div></div></div></div>*@

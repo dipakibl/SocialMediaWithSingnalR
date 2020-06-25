@@ -1,0 +1,193 @@
+﻿@using Microsoft.AspNetCore.Http;
+<!DOCTYPE html>
+<style>
+    .notification .badge {
+        position: absolute;
+        top: -18px;
+        left: -11px;
+        padding: 3px 10px;
+        border-radius: 50%;
+        background-color: #1d22d2;
+        color: white;
+        position: relative;
+        width: 30px;
+        height: 22px;
+        font-size: 16px;
+    }
+</style>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" type="text/css" href="~/temp/css/animate.css">
+    <link rel="stylesheet" type="text/css" href="~/temp/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="~/temp/css/line-awesome.css">
+    <link rel="stylesheet" type="text/css" href="~/temp/css/line-awesome-font-awesome.min.css">
+    <link href="~/temp/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="~/temp/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="~/temp/css/jquery.mCustomScrollbar.min.css">
+    <link rel="stylesheet" type="text/css" href="~/temp/lib/slick/slick.css">
+    <link rel="stylesheet" type="text/css" href="~/temp/lib/slick/slick-theme.css">
+    <link rel="stylesheet" type="text/css" href="~/temp/css/style.css">
+    <link rel="stylesheet" type="text/css" href="~/temp/css/responsive.css">
+</head>
+
+<body oncontextmenu="return false;">
+
+    <div class="wrapper">
+        <header>
+            <div class="container">
+                <div class="header-data">
+                    <nav>
+                        <ul>
+                            <li>
+                                <a href="https://localhost:44329/Home/Index" title="">
+                                    <span><img src="~/temp/images/icon1.png" alt=""></span>
+                                    Home
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://localhost:44329/Home/Profile" title="">
+                                    <span><img src="~/temp/images/icon4.png" alt=""></span>
+                                    Profiles
+                                </a>
+                            </li>
+
+                            <li>
+                                <p hidden="hidden" id="user"></p>
+                                <input type="hidden" id="signalRConnectionId" />
+                                <a href="#" title="" class="not-box-open notification">
+                                    <span><img src="~/temp/images/icon7.png" alt=""></span>
+                                    Notification
+
+                                    <span class="badge" id="Notticount"></span>
+                                </a>
+                                <div class="notification-box noti" style="width:320px" id="notification">
+                                    <div class="nt-title">
+                                        <h4>Setting</h4>
+                                        <a href="#" title="">Clear all</a>
+                                    </div>
+                                    <div class="nott-list">
+                                        <div id="nottlist">
+                                        </div>
+                                        <div class="view-all-nots">
+                                            <a href="#" title="">View All Notification</a>
+                                        </div>
+                                    </div><!--nott-list end-->
+                                </div><!--notification-box end-->
+                            </li>
+                        </ul>
+                    </nav><!--nav end-->
+                    <div class="menu-btn">
+                        <a href="#" title=""><i class="fa fa-bars"></i></a>
+                    </div><!--menu-btn end-->
+                    <div class="user-account">
+                        <div class="user-info">
+                           
+                                <a href="#" title="">@Context.Session.GetString("UserName")</a>
+
+                            <i class="la la-sort-down"></i>
+                        </div>
+                        <div class="user-account-settingss" id="users">
+                            <h3 class="tc"><a href="https://localhost:44329/User/LogOut" title="">Logout</a></h3>
+                        </div><!--user-account-settingss end-->
+                    </div>
+                </div><!--header-data end-->
+            </div>
+        </header><!--header end-->
+
+        @RenderBody()
+    </div><!--theme-layout end-->
+
+
+
+    <script type="text/javascript" src="~/temp/js/jquery.min.js"></script>
+    <script type="text/javascript" src="~/temp/js/popper.js"></script>
+    <script type="text/javascript" src="~/temp/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/temp/js/jquery.mCustomScrollbar.js"></script>
+    <script type="text/javascript" src="~/temp/lib/slick/slick.min.js"></script>
+    <script type="text/javascript" src="~/temp/js/scrollbar.js"></script>
+    <script type="text/javascript" src="~/temp/js/script.js"></script>
+    <script src="~/lib/signalr/signalr.js"></script>
+    <script>
+        var userId = @Context.Session.GetString("UserId");
+       // document.addEventListener("DOMContentLoaded", ready);
+        document.getElementById("user").innerHTML = "UserId: " + userId;
+        $(document).ready(function () {
+            var connection = new signalR.HubConnectionBuilder().withUrl("/NotificationHub?userId=" + userId).build();
+            connection.on("sendToUser", (Type, UserName, Picture, count, Id) => {
+                GetNotificaiton();
+              //  if (count != 0) {
+              //       $("#Notticount").show();
+              //       $("#Notticount").text(count);
+              //  }
+              //  else {
+              //       $("#Notticount").hide();
+              //  }
+
+              //$("#nottlist").append('<div class="notfication-details" onclick="UpdateNotify('+Id+')" style="background-color: #d8cfcf;"> <div class="noty-user-img"></div><div class="notification-info"> <h3><a href="#" title="">'+UserName+'</a> '+Type+'.</h3></div><!--notification-info --><img src="https://localhost:44329/ProfilePhoto/'+Picture+'" style="height:25px;width: 38px;" /></div>');
+            });
+
+            connection.start().catch(function (err) {
+                return console.error(err.toString());
+            }).then(function () {
+                $("#Notticount").hide();
+                GetNotificaiton();
+            });
+
+        });
+         function GetNotificaiton() {
+        $.ajax({
+            type: 'Get',
+            url: '/Home/GetNotification',
+            dataType: 'json',
+            success: function (result) {
+                $("#nottlist").empty();
+                $.each(result, function (i, l) {
+                    if (l.count!=0) {
+                        $("#Notticount").show();
+                         $("#Notticount").text(l.count);
+                    } else {
+                         $("#Notticount").hide();
+                    }
+
+                    if (l.isRead==false) {
+                         $("#nottlist").append('<div class="notfication-details" onclick="UpdateNotify('+l.notfID+')" style="background-color: #d8cfcf;"> <div class="noty-user-img"></div><div class="notification-info"> <h3><a href="#" title="">' + l.userName + '</a> ' + l.type + '.</h3></div><!--notification-info --><img src="https://localhost:44329/ProfilePhoto/' + l.picture + '" style="height:25px;width: 38px;" /></div>');
+                    }
+                    else if (l.isRead==true) {
+                        $("#nottlist").append('<div class="notfication-details"  > <div class="noty-user-img"></div><div class="notification-info"> <h3><a href="#" title="">' + l.userName + '</a> ' + l.type + '.</h3></div><!--notification-info --><img src="https://localhost:44329/ProfilePhoto/' + l.picture + '" style="height:25px;width: 38px;" /></div>');
+                    }
+
+                })
+
+            }
+        });
+        }
+        function UpdateNotify(notfID) {
+            $.ajax({
+            async: true,
+            type: "POST",
+            url: '/Home/UpdateNotification',
+            data: {
+                NotifyId: notfID
+            },
+                success: function (result) {
+                GetNotificaiton();
+            },
+            error: function () {
+            }
+        });
+
+        }
+    </script>
+
+
+</body>
+<script>'undefined' === typeof _trfq || (window._trfq = []); 'undefined' === typeof _trfd && (window._trfd = []), _trfd.push({ 'tccl.baseHost': 'secureserver.net' }), _trfd.push({ 'ap': 'cpsh' }, { 'server': 'a2plcpnl0235' }) // Monitoring performance to make your website faster. If you want to opt-out, please contact web hosting support.</script>
+<!-- Mirrored from gambolthemes.net/workwise-new/ by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 05 Sep 2019 10:37:02 GMT -->
+
+
+</html>
