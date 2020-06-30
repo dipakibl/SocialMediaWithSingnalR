@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\IBL\\Upload_ProfilePhoto\\Upload_ProfilePhoto\\Upload_ProfilePhoto.csproj": {}
+    "E:\\GitHubDemo\\Upload_ProfilePhoto and Push_Notification\\SocialMediaWithSingnalR\\Upload_ProfilePhoto\\Upload_ProfilePhoto.csproj": {}
   },
   "projects": {
-    "D:\\IBL\\Upload_ProfilePhoto\\Upload_ProfilePhoto\\Upload_ProfilePhoto.csproj": {
+    "E:\\GitHubDemo\\Upload_ProfilePhoto and Push_Notification\\SocialMediaWithSingnalR\\Upload_ProfilePhoto\\Upload_ProfilePhoto.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\IBL\\Upload_ProfilePhoto\\Upload_ProfilePhoto\\Upload_ProfilePhoto.csproj",
+        "projectUniqueName": "E:\\GitHubDemo\\Upload_ProfilePhoto and Push_Notification\\SocialMediaWithSingnalR\\Upload_ProfilePhoto\\Upload_ProfilePhoto.csproj",
         "projectName": "Upload_ProfilePhoto",
-        "projectPath": "D:\\IBL\\Upload_ProfilePhoto\\Upload_ProfilePhoto\\Upload_ProfilePhoto.csproj",
+        "projectPath": "E:\\GitHubDemo\\Upload_ProfilePhoto and Push_Notification\\SocialMediaWithSingnalR\\Upload_ProfilePhoto\\Upload_ProfilePhoto.csproj",
         "packagesPath": "C:\\Users\\Borse Nitin\\.nuget\\packages\\",
-        "outputPath": "D:\\IBL\\Upload_ProfilePhoto\\Upload_ProfilePhoto\\obj\\",
+        "outputPath": "E:\\GitHubDemo\\Upload_ProfilePhoto and Push_Notification\\SocialMediaWithSingnalR\\Upload_ProfilePhoto\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\",

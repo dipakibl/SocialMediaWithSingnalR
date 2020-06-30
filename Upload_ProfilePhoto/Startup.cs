@@ -32,7 +32,7 @@ namespace Upload_ProfilePhoto
           options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddTransient<NotificationHub>();
-            services.AddScoped<ICommentRepository, CommentRepository>();
+            services.AddTransient<ICommentRepository, CommentRepository>();
             services.AddScoped<IUserConnectionManager, UserConnectionManager>();
             services.AddControllersWithViews();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

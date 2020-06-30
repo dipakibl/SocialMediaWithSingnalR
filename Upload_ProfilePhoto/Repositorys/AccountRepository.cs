@@ -14,7 +14,6 @@ namespace Upload_ProfilePhoto.Repositorys
         private ISession _session => _httpContextAccessor.HttpContext.Session;
 
         private readonly ProfiteDbContext _context;
-        
         public AccountRepository(ProfiteDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -69,7 +68,8 @@ namespace Upload_ProfilePhoto.Repositorys
                 ProfilesPictureGallery pictureGallery = new ProfilesPictureGallery
                 {
                     UserId = userid,
-                    Picture = profilepictureId
+                    Picture = profilepictureId,
+                    DateCreated = DateTime.Now
                 };
                 _context.ProfilesPictureGalleries.Add(pictureGallery);
                 Save();
@@ -127,7 +127,7 @@ namespace Upload_ProfilePhoto.Repositorys
 
                 var query = from a in profilesPictureGallery
                             join b in users on a.UserId equals b.Id
-                            select new { a.Id, a.Picture, a.UserId, b.First_Name, b.Last_Name, b.Email, b.ProfilePictureId };
+                            select new { a.Id, a.Picture, a.UserId, b.First_Name, b.Last_Name, b.Email, b.ProfilePictureId,a.DateCreated };
                 string currentprofile = profilesPictureGallery.Where(a => a.Id == users[0].ProfilePictureId).Select(a => a.Picture).FirstOrDefault();
 
                 List<Comman> commen = query.Select(x => new Comman
@@ -139,7 +139,8 @@ namespace Upload_ProfilePhoto.Repositorys
                     PictureName = x.Picture,
                     ProfilePictureId = x.ProfilePictureId,
                     currentProfile = currentprofile,
-                    picureid = x.Id
+                    picureid = x.Id,
+                    DateCreated=x.DateCreated
 
 
                 }).OrderByDescending(a => a.picureid).ToList();
@@ -163,7 +164,7 @@ namespace Upload_ProfilePhoto.Repositorys
 
                 var query = from a in profilesPictureGallery
                             join b in users on a.UserId equals b.Id
-                            select new { a.Id, a.Picture, a.UserId, b.First_Name, b.Last_Name, b.Email, b.ProfilePictureId };
+                            select new { a.Id,a.DateCreated, a.Picture, a.UserId, b.First_Name, b.Last_Name, b.Email, b.ProfilePictureId};
                 string currentprofile = profilesPictureGallery.Where(a => a.Id == users[0].ProfilePictureId).Select(a => a.Picture).FirstOrDefault();
 
                 List<Comman> commen = query.Select(x => new Comman
@@ -174,8 +175,10 @@ namespace Upload_ProfilePhoto.Repositorys
                     Email = x.Email,
                     PictureName = x.Picture,
                     ProfilePictureId = x.ProfilePictureId,
-                    currentProfile =GetPictureById(x.ProfilePictureId),
-                    picureid = x.Id
+                    currentProfile = GetPictureById(x.ProfilePictureId),
+                    picureid = x.Id,
+                    DateCreated = x.DateCreated
+                   
 
 
                 }).OrderByDescending(a => a.picureid).ToList();
@@ -231,7 +234,7 @@ namespace Upload_ProfilePhoto.Repositorys
                         return fileid;
                     }
 
-                    _context.pictureLikes.Add(new PictureLike { FileId = picture.Id, UserId = currentuser, TimeStamp = DateTime.UtcNow });
+                    _context.pictureLikes.Add(new PictureLike { FileId = picture.Id, UserId = currentuser, TimeStamp = DateTime.Now });
                     fileid = picture.Id;
                 }
                 else
@@ -251,8 +254,6 @@ namespace Upload_ProfilePhoto.Repositorys
                 throw;
             }
 
-
-            throw new NotImplementedException();
         }
         public List<SetLike> GetLikes()
         {
@@ -319,14 +320,14 @@ namespace Upload_ProfilePhoto.Repositorys
                         notif.Type = "Liked your Photo";
                         notif.PictureId = _File.Id;
                         notif.IsRead = false;
-                        notif.DateCreated = DateTime.UtcNow;
+                        notif.DateCreated = DateTime.Now;
                         _context.UserNotifications.Add(notif);
-                        
+
                     }
                     else
                     {
                         notif = _notify;
-                        notif.DateModified = DateTime.UtcNow;
+                        notif.DateModified = DateTime.Now;
                         notif.IsRead = false;
                         notif.Type = "Liked your Photo";
                         notif.DateDeleted = null;
@@ -339,7 +340,7 @@ namespace Upload_ProfilePhoto.Repositorys
                     if (_notify != null)
                     {
                         notif = _notify;
-                        notif.DateDeleted = DateTime.UtcNow;
+                        notif.DateDeleted = DateTime.Now;
                         notif.IsRead = false;
                         notif.Type = "Unliked your Photo";
                         _context.UserNotifications.Update(notif);
@@ -385,11 +386,17 @@ namespace Upload_ProfilePhoto.Repositorys
                     SetNotification notification = new SetNotification();
                     notification.NotfID = allnotifi[i].Id;
                     notification.UserName = user.First_Name + user.Last_Name;
+                    notification.UserImage = GetPictureById(user.ProfilePictureId);
                     notification.Type = allnotifi[i].Type;
                     notification.Picture = picture;
                     notification.IsRead = allnotifi[i].IsRead;
                     notification.CreatedDate = allnotifi[i].DateCreated;
                     notification.Count = count;
+                    notification.CommentId = allnotifi[i].CommentedId;
+                    if (notification.CommentId != 0)
+                    {
+                        notification.CommentMessage = _context.PictureComments.Where(a => a.Id == notification.CommentId).Select(a => a.Message).FirstOrDefault();
+                    }
 
                     SetNotification.Add(notification);
 
@@ -402,7 +409,7 @@ namespace Upload_ProfilePhoto.Repositorys
                 throw;
             }
         }
-        public int GetNotificaitonCount(int ?id)
+        public int GetNotificaitonCount(int? id)
         {
             string ids = _session.GetString("UserId");
             int userid = int.Parse(ids);
@@ -428,5 +435,30 @@ namespace Upload_ProfilePhoto.Repositorys
                 throw;
             }
         }
+
+        public List<CommentCount> CommentCountwisePicture()
+        {
+            try
+            {
+                List<CommentCount> commentCounts = new List<CommentCount>();
+               var _Allpictures = _context.ProfilesPictureGalleries.ToList();
+                for (int i = 0; i < _Allpictures.Count; i++)
+                {
+                    var Comment = new CommentCount();
+                   var _getComment = _context.PictureComments.Where(a => a.PictureId == _Allpictures[i].Id && a.DateDeleted == null).ToList();
+
+                    Comment.TotalCount = _getComment.Count;
+                    Comment.PicutreId = _Allpictures[i].Id;
+                    commentCounts.Add(Comment);
+                }
+                return commentCounts;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
     }
 }

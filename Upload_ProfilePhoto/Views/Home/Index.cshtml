@@ -3,22 +3,48 @@
     Layout = "~/Views/Shared/_UserLayout.cshtml";
     ViewData["Title"] = "Home";
 }
+@using Microsoft.AspNetCore.Http;
 <style>
-
-    .imgstyle {
-        height: 50px;
-        width: 50px;
-        margin: 2px 0px 0px;
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        padding-top: 50px;
     }
 
-    .likeclass {
-        color: red !important;
+    .stylemodelbutton {
+        padding: 0 10px;
+        float: unset;
+        color: #fff;
+        background-color: #e44d3a;
+        height: 40px;
+        text-align: center;
+        border: 0;
+        font-size: 14px;
+        cursor: pointer;
+        margin-left: 14px;
+        font-weight: 600;
     }
 
-    .unlikeclass {
-        color: #212529;
+    .modeltextbox {
+        width: 320px;
+        height: 40px;
+        border: 1px solid #e5e5e5;
+        background-color: #efefef;
+        padding-left: 10px;
+        color: #b2b2b2;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 40px;
+        resize: none;
     }
 </style>
+
 <main>
     <div class="main-section">
         <div class="container">
@@ -47,6 +73,7 @@
                     </div>
                     <div class="col-lg-6 col-md-8 no-pd">
                         <div class="main-ws-sec">
+                            <span style="display:none"></span>
                             <div class="posts-section" id="myimages">
 
                             </div><!--posty end-->
@@ -57,14 +84,22 @@
             </div>
         </div><!-- main-section-data end-->
     </div>
+    <div id="id01" class="modal">
+        @*<span onclick="model()" class="close" title="Close Modal">&times;</span>*@
+        <form style="margin: 4% 32% 4% 35%;">
+            <input type="hidden" id="CommId" />
+            <input type="text" class="modeltextbox" id="myInput" required="required" placeholder="Post a comment Replay">
+            <button type="button" class="stylemodelbutton" onclick="SendReplayComment()">Send</button>
+        </form>
+    </div>
 </main>
+
 <link href="~/lib/toastr.js/toastr.css" rel="stylesheet" />
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/toastr.js/toastr.min.js"></script>
 <script>
     $(document).ready(function () {
         showprofiles();
-        GetAllLiker();
         CurrentPrifile();
     });
     function showprofiles() {
@@ -74,7 +109,7 @@
             dataType: 'json',
             success: function (result) {
                 $.each(result, function (i, l) {
-                    $("#myimages").append('<div class="post-bar"><div class="post_topbar"><div class="usy-dt"><img class="imgstyle" src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt=""><div class="usy-name"><h3>' + l.first_Name + ' ' + l.last_Name + '</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt="">3 min ago</span></div></div></div><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" /><div class="job-status-bar"><ul class="like-com"><li><a  id="likeid' + l.picureid + '" class="unlikeclass"  onclick="LikeProce(' + l.picureid + ')"><i class="fas fa-heart"></i> Like</a><img src="https://localhost:44329/temp/images/liked-img.png" alt=""><span id="' + l.picureid + '"></span></li><li  onclick="MessageBox('+l.picureid+')"><a class="com" id="MessageBox"><i class="fas fa-comment-alt"></i> Comment 15</a></li></ul></div><div id="commentsection'+l.picureid+'" style="display: none;" class="comment-section"><hr style="border-top: 3px solid #e5e5e5 !important;"><div class="comment-sec"><ul><li><div class="comment-list"><div class="bg-img"><img src="https://localhost:44329/temp/images/resources/bg-img3.png" alt=""></div><div class="comment"><h3>John Doe</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt=""> 3 min ago</span><p>Very Nice Pic.</p><a href="#" title=""><i class="fa fa-reply-all"></i>Reply</a></div></div></li></ul></div><div class="post-comment"><div class="cm_img"><img src="https://localhost:44329/temp/images/resources/bg-img4.png" alt=""></div><div class="comment_box"><form><input type="hidden" id="txtpictureid'+l.picureid+'" value="'+l.picureid+'" /><input type="text" id="txtComment'+l.picureid+'" placeholder="Post a comment"  style="width: 320px;"><button type="button" onclick="SendComment('+l.picureid+')">Send</button></form></div></div></div>')
+                    $("#myimages").append('<div class="post-bar"><div class="post_topbar"><div class="usy-dt"><img class="imgstyle" src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt=""><div class="usy-name"><h3>' + l.first_Name + ' ' + l.last_Name + '</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt="">'+ConvertDate(l.dateCreated)+' ago</span></div></div></div><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" /><div class="job-status-bar"><ul class="like-com"><li><a href="javascript:void(0)" id="likeid' + l.picureid + '" class="unlikeclass"  onclick="LikeProce(' + l.picureid + ')"><i class="fas fa-heart"></i> Like</a><span style="margin: -1px 0px 0px 0px;" id="' + l.picureid + '"></span></li><li  onclick="$( '+"'"+'#commentsection'+l.picureid+''+"'"+').toggle()"><a href="javascript:void(0)" class="com" ><i class="fas fa-comment-alt"></i> Comment <b id="commentcount'+l.picureid+'"></b> </a></li></ul></div><div id="commentsection' + l.picureid + '" style="display: none;" class="comment-section"><hr style="border-top: 3px solid #e5e5e5 !important;"><div class="comment-sec scrollbar" id="style-4"><ul id="commentlist' + l.picureid + '"></ul></div><div class="post-comment"><div class="cm_img"><img src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt="" style="height: 40px;width: 40px;border-radius: 100px;"></div><div class="comment_box"><form id="form"><input type="hidden" id="txtCommentId'+l.picureid+'" value=""><input type="hidden" id="txtpictureid' + l.picureid + '" value="' + l.picureid + '" /><input type="text" required="required" id="txtComment' + l.picureid + '" placeholder="Post a comment" style="width: 320px;"><button type="button" onclick="SendComment(' + l.picureid + ')">Send</button></form></div></div></div>')
                 })
 
             }
@@ -111,14 +146,46 @@
             },
             success: function (result) {
                 GetAllLiker();
-                if (result != 0) {
-                    // Notification(result);
-                }
-
             },
-            error: function () {
-            }
         });
+
+    }
+    function ConvertDate(dateStr) {
+        var date = new Date(dateStr);
+        var seconds = Math.floor((new Date() - date) / 1000);
+  var interval = Math.floor(seconds / 31536000);
+  if (interval > 1) {
+    return interval + " years";
+  }
+  interval = Math.floor(seconds / 2592000);
+          if (interval > 1) {
+              if (interval > 12) {
+                  return  "1 years";
+              }
+    return interval + " months";
+  }
+  interval = Math.floor(seconds / 86400);
+          if (interval > 1) {
+      if (interval > 31) {
+                  return  "1 months";
+              }
+    return interval + " days";
+  }
+  interval = Math.floor(seconds / 3600);
+  if (interval > 1) {
+    return interval + " hours";
+  }
+  interval = Math.floor(seconds / 60);
+          if (interval > 1) {
+      if (interval > 60) {
+                  return  "1 hours";
+              }
+    return interval + " minutes";
+        }
+        if (seconds > 60) {
+            return "1 minute";
+        }
+  return Math.floor(seconds) + " seconds";
 
     }
     function GetAllLiker() {
@@ -138,50 +205,155 @@
             }
         });
     }
-    //function Notification(id) {
-    //    $.ajax({
-    //        async: true,
-    //        type: "POST",
-    //        url: '/Home/Notification',
-    //        data: {
-    //            pictureid: id,
-    //        },
-    //        success: function (result) {
-
-    //        },
-    //        error: function () {
-    //        }
-    //    });
-    //}
-
-   
-    function MessageBox(id) {
-        $("#commentsection"+id).toggle();
-    }
     function SendComment(id) {
-        var Comment = $('#txtComment'+id).val(); 
-        var Pictureid = $('#txtpictureid'+id).val();
-         $.ajax({
+        var comment = {};
+        comment.Id =  $("#txtCommentId"+id).val();;
+        comment.Message = $('#txtComment' + id).val();
+        comment.PictureId = $('#txtpictureid' + id).val();
+        if (comment.Message == "") {
+            return;
+        }
+        if (comment.PictureId == "") {
+            return;
+        }
+        $.ajax({
             async: true,
             type: "POST",
             url: '/Home/SendComment',
             data: {
-                comments: Comment,
-                pictureid: Pictureid
+                comments: comment
+
             },
             success: function (result) {
-                GetAllLiker();
-                if (result != 0) {
-                    // Notification(result);
-                }
+                $('#txtComment' + id).val("");
+                $('#txtCommentId' + id).val("");
+                GetAllComments();
 
             },
             error: function () {
             }
         });
     }
+    function GetAllComments() {
+        var CurUserId = @Context.Session.GetString("UserId");
+        $.ajax({
+            type: 'Get',
+            url: '/Home/GetAllComments',
+            dataType: 'json',
+            success: function (result) {
+                $.each(result, function (i, l) {
+                    $("#commentlist" + l.commentPitcureId).empty();
+                })
+                $.each(result, function (i, l) {
+                    $("#commentcount"+l.commentPitcureId).text(l.totalComment);
+                    $("#commentlist" + l.commentPitcureId).append('<li id="li'+l.commentId+'"><div class="comment-list" id="commentlist"style="display: inline-flex;"><div class="bg-img"><img src="https://localhost:44329/ProfilePhoto/' + l.userPicture + '" alt="" style="height: 36px;width: 50px;"></div><div class="comment"><div class="row" style="margin: 0;"><h3>' + l.userName + '</h3><div class="ed-opts" id="buttons'+l.commentId+'" style="display: none; margin: 0 0 0 250px;"><a href="javascript:void(0)" title="" class="ed-opts-open"><i class="la la-ellipsis-v"></i></a><ul class="ed-options active"><li style="margin: -16px 0 0 -25px;"><a href="javascript:void(0)" onclick="EditComment('+l.commentId+','+l.commentPitcureId+')" title="">Edit</a></li><li style="/* margin-bottom: 25px; */margin: 4px 0 0 -25px;"><a href="javascript:void(0)" onclick="DeleteComment('+l.commentId+')" title="">Delete</a></li></ul></div></div><span><img src="https://localhost:44329/temp/images/clock.png" alt=""> '+ConvertDate(l.createdDate)+' ago</span><p id="txtcomm'+l.commentId+'">' + l.message +'</p><a href="javascript:void(0)" title=""><i class="fa fa-heart"></i>Like</a>&nbsp;&nbsp;<a href="javascript:void(0)" onclick="model('+l.commentId+')" title=""><i class="fa fa-reply-all"></i>Reply</a><br /><a href="javascript:void(0)" onclick="$( '+"'"+'#Replaycommentlist'+l.commentId+''+"'"+').toggle()">replies&nbsp; <b  id="replies'+l.commentId+'"></b></a><ul id="Replaycommentlist'+ l.commentId +'" style="display: none;" ></ul></div></div></li>');
+                    if (l.userid == CurUserId) {
+                        $("#buttons"+l.commentId).show();
+                    }
+
+                    scrollDown();
+                })
+                GetCommentReplayes();
+            }
+        });
+    }
+    function scrollDown() {
+        var objDiv = $( "#style-4" ).get( 0 );
+        objDiv.scrollTop = objDiv.scrollHeight;
+    }
+    function DeleteComment(commentId) {
+         $.confirm({
+                    title: 'Confirm!',
+                    content: 'Are you sure you want to delete this Comment?',
+                    buttons: {
+                        confirm: function () {
+
+                            $.ajax({
+            async: true,
+            type: "POST",
+            url: '/Home/DeleteComment',
+            data: {
+                CommentId: commentId
+
+            },
+              success: function (result) {
+                  $("#li" + result.id).empty();
+                $('#txtCommentId' + result.pictureId).val("");
+                  GetNotificaiton();
+                  toastr.success("Comment Deleted.!")
+
+            },
+                                error: function () {
+                toastr.error("Error, Unsuccess in deleting comment.")
+            }
+        });
+
+                        },
+                        cancel: function () {
+
+                        },
+                    }
+
+                });
+
+    }
+    function EditComment(commentId,picureid) {
+        $("#txtCommentId"+picureid).val(commentId);
+        var text = $("#txtcomm" + commentId).text();
+        $('#txtComment'+ picureid).val(text);
+    }
+    var modal = document.getElementById('id01');
+    window.onclick = function(event) {
+  if (event.target == modal) {
+      modal.style.display = "none";
+  }
+    }
+    function model(id) {
+        document.getElementById('id01').style.display = 'block';
+        $("#CommId").val(id);
+    }
+    function SendReplayComment() {
+         var comment = {};
+        comment.PictureCommentId =  $("#CommId").val();
+        comment.Message = $(".modeltextbox").val();
+        if (comment.Message == "") {
+            return;
+        }
+        if (comment.PictureCommentId == "") {
+            return;
+        }
+         $.ajax({
+            async: true,
+            type: "POST",
+            url: '/Home/SendCommentReplay',
+            data: {
+                comments: comment
+            },
+             success: function (result) {
+                 document.getElementById('Replaycommentlist'+result.pictureCommentId).style.display = 'block';
+                    $(".modeltextbox").val("");
+                 $("#CommId").val("");
+                 document.getElementById('id01').style.display = 'none';
+
+                 GetCommentReplayes();
+
+            },
+        });
+    }
+    function GetCommentReplayes() {
+         $.ajax({
+            type: 'Get',
+            url: '/Home/GetAllCommentReplayes',
+            dataType: 'json',
+             success: function (result) {
+                $.each(result, function (i, l) {
+                    $("#Replaycommentlist" + l.commentId).append('<li><div class="comment-list"  style="display: inline-flex;"><div class="bg-img"><img src="https://localhost:44329/ProfilePhoto/' + l.userPicture + '" alt="" style="height: 36px;width: 50px;"></div><div class="comment"><div class="row" style="margin: 0;"><h3>' + l.userName + '</h3><div id="buttons21" style=""></div></div><span><img src="https://localhost:44329/temp/images/clock.png" alt=""> '+ConvertDate(l.createdDate)+' ago</span><p id="txtcomm21">' + l.message + '</p></div></div></li>');
+                     $("#replies" + l.commentId).text(l.totalComment);
+                })
+            }
+        });
+    }
 </script>
-@*<div class="post-bar"><div class="post_topbar"><div class="usy-dt"><img src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt=""><div class="usy-name"><h3>' + l.first_Name + ' ' + l.last_Name + '</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt="">3 min ago</span></div></div></div><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" /><div class="job-status-bar"><ul class="like-com"><li><a href="#"><i class="fas fa-heart"></i> Like</a><img src="https://localhost:44329/temp/images/liked-img.png" alt=""><span>25</span></li></ul></div></div>*@
 
-
-@*<div class="comment-section"><a href="#" class="plus-ic"><i class="la la-plus"></i></a><div class="comment-sec"><ul><li><div class="comment-list"><div class="bg-img"><img src="~/temp/images/resources/bg-img3.png" alt=""></div><div class="comment"><h3>John Doe</h3><span><img src="~/temp/images/clock.png" alt=""> 3 min ago</span><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam luctus hendrerit metus, ut ullamcorper quam finibus at.</p><a href="#" title=""><i class="fa fa-reply-all"></i>Reply</a></div></div></li></ul></div><div class="post-comment"><div class="cm_img"><img src="~/temp/images/resources/bg-img4.png" alt=""></div><div class="comment_box"><form><input type="text" placeholder="Post a comment"><button type="submit">Send</button></form></div></div></div>*@
+@*<div class="ed-opts" id="buttons'+l.commentId+'" style="display: none;"><a href="javascript:void(0)" title="" class="ed-opts-open"><i class="la la-ellipsis-v"></i></a><ul class="ed-options active"><li style="margin: -16px 0 0 -25px;"><a href="javascript:void(0)" onclick="EditComment('+l.commentId+','+l.commentPitcureId+')" title="">Edit</a></li><li style="/* margin-bottom: 25px; */margin: 4px 0 0 -25px;"><a href="javascript:void(0)" onclick="DeleteComment('+l.commentId+')" title="">Delete</a></li></ul></div>*@
+@*<div id="buttons'+l.commentId+'" style="display: none;"><ul class="bk-links" style="display: flex;"><li><a onclick="EditComment('+l.commentId+','+l.commentPitcureId+')" title=""><i class="la la-edit" style="background-color: #c1c16e;"></i></a></li><li><a onclick="DeleteComment('+l.commentId+')" title=""><i class="la la-remove" style="background-color: #e44d3a;"></i></a></li></ul></div>*@

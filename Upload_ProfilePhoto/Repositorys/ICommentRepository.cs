@@ -8,6 +8,18 @@ namespace Upload_ProfilePhoto.Repositorys
 {
    public interface ICommentRepository
     {
-        //PictureComments SentComment(string Comment, int picureid);
+        PictureComments SentComment(PictureComments comments);
+        List<CommentDTO> GetComment();
+        UserNotification CommentNotification(PictureComments comments);
+        PictureComments DeleteComments(int commentid);
+        PictureComments GetCommentsbyId(int commentId);
+        int PictureWiseCommentCount();
+        UserNotification UpdateNotification(PictureComments comments);
+        PictureCommentReplay PictureCommentReplay(PictureCommentReplay pictureCommentReplay);
+        PictureCommentReplay GetCommentReplaybyId(int ReplayComId);
+        List<CommentDTO> GetLlCommentReplays();
+
+
+
     }
 }

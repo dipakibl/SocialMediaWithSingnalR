@@ -20,14 +20,16 @@ namespace Upload_ProfilePhoto.Controllers
         private readonly IHostingEnvironment _appEnvironment;
         private readonly IAccountRepository _accountRepository;
         private readonly NotificationHub _notificationHub;
+        private readonly ICommentRepository _commentRepository;
 
-        public HomeController(ILogger<HomeController> logger, IHostingEnvironment appEnvironment, IAccountRepository accountRepository, NotificationHub notificationHub)
+        public HomeController(ILogger<HomeController> logger, IHostingEnvironment appEnvironment, IAccountRepository accountRepository, NotificationHub notificationHub,ICommentRepository commentRepository)
         {
+           
             _logger = logger;
             _accountRepository = accountRepository;
             _appEnvironment = appEnvironment;
             _notificationHub = notificationHub;
-
+            _commentRepository = commentRepository;
         }
 
         public IActionResult Index()
@@ -112,13 +114,6 @@ namespace Upload_ProfilePhoto.Controllers
             var data = _accountRepository.GetLikes();
             return Json(data);
         }
-        [HttpPost]
-        public JsonResult Notification(int pictureid)
-        {
-            var data = _accountRepository.Notification(pictureid, true);
-
-            return Json(data);
-        }
         public JsonResult GetNotification()
         {
             var data = _accountRepository.GetUserNotification();
@@ -130,10 +125,38 @@ namespace Upload_ProfilePhoto.Controllers
             return Json(data);
         }
 
-        public JsonResult SendComment(string comments,int pictureid)
+        public JsonResult SendComment(PictureComments comments)
         {
-            var data = "Success";
+            var data = _commentRepository.SentComment(comments);
+            var notification = _commentRepository.CommentNotification(data);
+            if (notification != null)
+            {
+                _notificationHub.SendNotification(notification);
+            }
             return Json(data);
+        }
+        public JsonResult DeleteComment(int CommentId)
+        {
+            var data = _commentRepository.DeleteComments(CommentId);
+            var notification = _commentRepository.UpdateNotification(data);
+            if (notification != null)
+            {
+                _notificationHub.SendNotification(notification);
+            }
+            return Json(data);
+        }
+        public JsonResult GetAllComments()
+        {
+            return Json(_commentRepository.GetComment());
+        }
+        public JsonResult SendCommentReplay(PictureCommentReplay comments)
+        {
+            var data = _commentRepository.PictureCommentReplay(comments);
+            return Json(data);
+        }
+        public JsonResult GetAllCommentReplayes()
+        {
+            return Json(_commentRepository.GetLlCommentReplays());
         }
         public IActionResult Privacy()
         {

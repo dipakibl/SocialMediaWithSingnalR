@@ -97,7 +97,7 @@
             dataType: 'json',
             success: function (result) {
                 $.each(result, function (i, l) {
-                    $("#myimages").append('<div class="product-feed-tab current" id="feed-dd"><div class="posts-section"><div class="post-bar"><div class="post_topbar"><div class="usy-dt"><img class="imgstyle" src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt=""><div class="usy-name"><h3>' + l.first_Name + ' ' + l.last_Name + '</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt="">3 min ago</span></div></div></div><div class="job_descp"><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" /></div><div class="job-status-bar"><ul class="like-com"><li><a  id="likeid' + l.picureid + '" class="unlikeclass"  onclick="LikeProce(' + l.picureid + ')"><i class="fas fa-heart"></i> Like</a><img src="https://localhost:44329/temp/images/liked-img.png" alt=""><span id="' + l.picureid + '"></span></li></ul></div></div></div></div>')
+                    $("#myimages").append('<div class="product-feed-tab current" id="feed-dd"><div class="posts-section"><div class="post-bar"><div class="post_topbar"><div class="usy-dt"><img class="imgstyle" src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt=""><div class="usy-name"><h3>' + l.first_Name + ' ' + l.last_Name + '</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt="">'+ConvertDate(l.dateCreated)+' ago</span></div></div></div><div class="job_descp"><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" /></div><div class="job-status-bar"><ul class="like-com"><li><a  id="likeid' + l.picureid + '" class="unlikeclass"  onclick="LikeProce(' + l.picureid + ')"><i class="fas fa-heart"></i> Like</a><span style="margin: -1px 0px 0px 0px;" id="' + l.picureid + '"></span></li></ul></div></div></div></div>')
                 })
 
             }
@@ -136,6 +136,41 @@
             }
         });
 
+    }
+      function ConvertDate(dateStr) {
+        var date = new Date(dateStr);
+        var seconds = Math.floor((new Date() - date) / 1000);
+  var interval = Math.floor(seconds / 31536000);
+  if (interval > 1) {
+    return interval + " years";
+  }
+  interval = Math.floor(seconds / 2592000);
+          if (interval > 1) {
+              if (interval > 12) {
+                  return  "1 years";
+              }
+    return interval + " months";
+  }
+  interval = Math.floor(seconds / 86400);
+          if (interval > 1) {
+      if (interval > 31) {
+                  return  "1 months";
+              }
+    return interval + " days";
+  }
+  interval = Math.floor(seconds / 3600);
+  if (interval > 1) {
+    return interval + " hours";
+  }
+  interval = Math.floor(seconds / 60);
+          if (interval > 1) {
+      if (interval > 60) {
+                  return  "1 hours";
+              }
+    return interval + " minutes";
+  }
+  return Math.floor(seconds) + " seconds";
+        
     }
     function GetAllLiker() {
         $.ajax({

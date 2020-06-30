@@ -242,7 +242,7 @@ $(".user-info").on("click", function(){$("#users").hide();
 	$( ".user-info" ).click(function() {
   $( ".user-account-settingss" ).slideToggle( "fast");
 	  $("#message").not($(this).next("#message")).slideUp();
-	  $("#notification").not($(this).next("#notification")).slideUp();
+    $("#notification").not($(this).next("#notification")).slideUp();
     // Animation complete.
   });
  

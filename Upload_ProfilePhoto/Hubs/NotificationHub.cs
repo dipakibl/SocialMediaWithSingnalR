@@ -46,15 +46,15 @@ namespace Upload_ProfilePhoto.Hubs
         public void SendNotification(UserNotification userNotification)
         {
                 var connections = _userConnectionManager.GetUserConnections(userNotification.UserId.ToString());
-                var UserData = _accountRepository.GetUserById(userNotification.FriendId);
-                string UserName = UserData.First_Name + UserData.Last_Name;
-                string Picture = _accountRepository.GetPictureById(userNotification.PictureId);
-                string count = _accountRepository.GetNotificaitonCount(userNotification.UserId).ToString();
+               // var UserData = _accountRepository.GetUserById(userNotification.FriendId);
+              //  string UserName = UserData.First_Name + UserData.Last_Name;
+               // string Picture = _accountRepository.GetPictureById(userNotification.PictureId);
+             //   string count = _accountRepository.GetNotificaitonCount(userNotification.UserId).ToString();
                 if (connections != null && connections.Count > 0)
                 {
                     foreach (var connectionId in connections)
                     {
-                        _notificationHubContext.Clients.Client(connectionId).SendAsync("sendToUser", userNotification.Type, UserName, Picture,count,userNotification.Id);
+                        _notificationHubContext.Clients.Client(connectionId).SendAsync("sendToUser", userNotification.Type);
                     }
                 }
         }
