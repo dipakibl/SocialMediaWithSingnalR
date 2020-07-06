@@ -25,6 +25,7 @@ namespace Upload_ProfilePhoto.Repositorys
         int GetNotificaitonCount(int ?id);
         int UpdateNotification(int notifyid);
         List<CommentCount> CommentCountwisePicture();
+        ProfilesPictureGallery DeletePost(int PictureId);
 
 
 

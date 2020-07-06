@@ -31,6 +31,7 @@ namespace Upload_ProfilePhoto
             services.AddDbContext<ProfiteDbContext>(options =>
           options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IFriendRepository, FriendRepository>();
             services.AddTransient<NotificationHub>();
             services.AddTransient<ICommentRepository, CommentRepository>();
             services.AddScoped<IUserConnectionManager, UserConnectionManager>();
@@ -38,6 +39,7 @@ namespace Upload_ProfilePhoto
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSession();
             services.AddSignalR();
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +71,7 @@ namespace Upload_ProfilePhoto
             });
             app.UseSignalR(routes =>
             {
+
                 routes.MapHub<NotificationHub>("/NotificationHub");
             });
         }

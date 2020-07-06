@@ -13,7 +13,7 @@ namespace Upload_ProfilePhoto.Repositorys
         private ISession _session => _httpContextAccessor.HttpContext.Session;
         private readonly ProfiteDbContext _context;
         private readonly IAccountRepository _accountRepository;
-        public CommentRepository(ProfiteDbContext context, IHttpContextAccessor httpContextAccessor,IAccountRepository accountRepository)
+        public CommentRepository(ProfiteDbContext context, IHttpContextAccessor httpContextAccessor, IAccountRepository accountRepository)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
@@ -24,7 +24,7 @@ namespace Upload_ProfilePhoto.Repositorys
             try
             {
                 var _comment = new PictureComments();
-                if (comments.Id!=0)
+                if (comments.Id != 0)
                 {
                     _comment = _context.PictureComments.Where(a => a.Id == comments.Id).FirstOrDefault();
                     _comment.Message = comments.Message;
@@ -65,11 +65,11 @@ namespace Upload_ProfilePhoto.Repositorys
                     comment.CommentId = _allComement[i].Id;
                     comment.Userid = User.Id;
                     comment.CommentPitcureId = _allComement[i].PictureId;
-                    comment.UserName = User.First_Name +" " +  User.Last_Name;
+                    comment.UserName = User.First_Name + " " + User.Last_Name;
                     comment.UserPicture = _accountRepository.GetPictureById(User.ProfilePictureId);
                     comment.Message = _allComement[i].Message;
                     comment.CreatedDate = _allComement[i].DateCreated;
-                    comment.TotalComment = _accountRepository.CommentCountwisePicture().Where(a=>a.PicutreId==comment.CommentPitcureId).Select(a=>a.TotalCount).FirstOrDefault();
+                    comment.TotalComment = _accountRepository.CommentCountwisePicture().Where(a => a.PicutreId == comment.CommentPitcureId).Select(a => a.TotalCount).FirstOrDefault();
                     ALLComments.Add(comment);
                 }
                 return ALLComments;
@@ -86,7 +86,7 @@ namespace Upload_ProfilePhoto.Repositorys
             string id = _session.GetString("UserId");
             int currUser = Convert.ToInt32(id);
             var _File = _context.ProfilesPictureGalleries.Where(a => a.Id == comments.PictureId).FirstOrDefault();
-            var _notify = _context.UserNotifications.Where(a => a.PictureId == comments.PictureId && a.FriendId == currUser && a.CommentedId == comments.Id ).FirstOrDefault();
+            var _notify = _context.UserNotifications.Where(a => a.PictureId == comments.PictureId && a.FriendId == currUser && a.CommentedId == comments.Id && a.Type == "Commented on your photo").FirstOrDefault();
             UserNotification notif = new UserNotification();
             if (_notify == null)
             {
@@ -127,7 +127,7 @@ namespace Upload_ProfilePhoto.Repositorys
                 {
                     item.DateDeleted = DateTime.Now;
                     _context.PictureCommentReplays.Update(item);
-                   
+
                 }
                 _accountRepository.Save();
                 return pictureComments;
@@ -145,15 +145,9 @@ namespace Upload_ProfilePhoto.Repositorys
             return _context.PictureComments.Where(a => a.Id == commentId).FirstOrDefault();
         }
 
-        public int PictureWiseCommentCount()
-        {
-            throw new NotImplementedException();
-        }
-
         public UserNotification UpdateNotification(PictureComments comments)
         {
             var _notification = _context.UserNotifications.Where(a => a.CommentedId == comments.Id).FirstOrDefault();
-            _notification.Type = "Deleted Commented on your photo";
             _notification.DateDeleted = DateTime.Now;
             _notification.IsRead = false;
             _context.UserNotifications.Update(_notification);
@@ -181,7 +175,7 @@ namespace Upload_ProfilePhoto.Repositorys
                     }
                     else
                     {
-                         _replaycomments = GetCommentReplaybyId(pictureCommentReplay.Id);
+                        _replaycomments = GetCommentReplaybyId(pictureCommentReplay.Id);
                         if (_replaycomments != null)
                         {
                             _replaycomments.Message = pictureCommentReplay.Message;
@@ -199,12 +193,12 @@ namespace Upload_ProfilePhoto.Repositorys
 
                 throw;
             }
-              
+
         }
 
         public PictureCommentReplay GetCommentReplaybyId(int ReplayComId)
         {
-           
+
             return _context.PictureCommentReplays.Where(a => a.Id == ReplayComId).FirstOrDefault();
         }
 
@@ -220,15 +214,109 @@ namespace Upload_ProfilePhoto.Repositorys
                     CommentDTO ReplyComment = new CommentDTO();
                     ReplyComment.ReplyCommentId = _AllCommentsReply[i].Id;
                     ReplyComment.CommentId = _AllCommentsReply[i].PictureCommentId;
+                    ReplyComment.CommentPitcureId = GetCommentsbyId(ReplyComment.CommentId).PictureId;
                     ReplyComment.Message = _AllCommentsReply[i].Message;
                     ReplyComment.Userid = User.Id;
-                    ReplyComment.UserName = User.First_Name +" "+User.Last_Name;
+                    ReplyComment.UserName = User.First_Name + " " + User.Last_Name;
                     ReplyComment.UserPicture = _accountRepository.GetPictureById(User.ProfilePictureId);
                     ReplyComment.CreatedDate = _AllCommentsReply[i].DateCreated;
                     ReplyComment.TotalComment = _context.PictureCommentReplays.Where(a => a.PictureCommentId == _AllCommentsReply[i].PictureCommentId && a.DateDeleted == null).ToList().Count();
                     commentDTO.Add(ReplyComment);
                 }
                 return commentDTO;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public PictureCommentsLike CommentsLike(int commentId, bool like)
+        {
+            PictureCommentsLike commentsLike = new PictureCommentsLike();
+            try
+            {
+                string userid = _session.GetString("UserId");
+                var _Comment = GetCommentsbyId(commentId);
+                if (_Comment == null)
+                    return commentsLike;
+
+                var _CommentLikeExist = _context.PictureCommentsLikes.Where(a => a.UserId == int.Parse(userid) && a.CommentId == _Comment.Id).FirstOrDefault();
+                if (like)
+                {
+                    if (_CommentLikeExist != null)
+                    {
+                        commentsLike = _CommentLikeExist;
+                        return commentsLike;
+                    }
+                    commentsLike.CommentId = _Comment.Id;
+                    commentsLike.UserId = int.Parse(userid);
+                    commentsLike.TimeStamp = DateTime.Now;
+                    _context.PictureCommentsLikes.Add(commentsLike);
+                }
+                else
+                {
+                    if (_CommentLikeExist != null)
+                    {
+                        commentsLike = _CommentLikeExist;
+                        _context.PictureCommentsLikes.Remove(commentsLike);
+                    }
+                }
+                _accountRepository.Save();
+                return commentsLike;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<CommentLikeDTO> GetAllCommentLikes()
+        {
+            var _CommentLikeList = new List<CommentLikeDTO>();
+            try
+            {
+                string CurrUserId = _session.GetString("UserId");
+                var _CommentLikes = _context.PictureCommentsLikes.ToList();
+                for (int i = 0; i < _CommentLikes.Count; i++)
+                {
+                    var Commlikes = new CommentLikeDTO();
+                    Commlikes.CommentId = _CommentLikes[i].CommentId;
+                    if (_CommentLikes[i].UserId == int.Parse(CurrUserId))
+                    {
+                        Commlikes.CurrentUserLike = true;
+                    }
+                    Commlikes.TotalLike = _CommentLikes.Where(a => a.CommentId == _CommentLikes[i].CommentId).ToList().Count;
+                    _CommentLikeList.Add(Commlikes);
+                }
+                return _CommentLikeList;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public int GetCommentLikeCountCommentIdWise(int CommentId)
+        {
+            if (CommentId != 0)
+            {
+                return _context.PictureCommentsLikes.Where(a => a.CommentId == CommentId).ToList().Count;
+            }
+            return 0;
+        }
+
+        public PictureCommentReplay DeleteCommentReplay(int ReplayCommentId)
+        {
+            try
+            {
+                var pictureCommentReplay = _context.PictureCommentReplays.Where(a => a.Id  == ReplayCommentId).FirstOrDefault();
+                pictureCommentReplay.DateDeleted = DateTime.Now;
+                _context.PictureCommentReplays.Update(pictureCommentReplay);
+                _accountRepository.Save();
+                return pictureCommentReplay;
             }
             catch (Exception)
             {

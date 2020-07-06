@@ -17,6 +17,7 @@ namespace Upload_ProfilePhoto.Models
         public DbSet<UserNotification> UserNotifications { get; set; }
         public DbSet<PictureComments> PictureComments { get; set; }
         public DbSet<PictureCommentReplay> PictureCommentReplays { get; set; }
+        public DbSet<PictureCommentsLike> PictureCommentsLikes { get; set; }
 
     }
 }

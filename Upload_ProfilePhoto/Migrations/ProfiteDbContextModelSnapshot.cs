@@ -82,6 +82,27 @@ namespace Upload_ProfilePhoto.Migrations
                     b.ToTable("PictureComments");
                 });
 
+            modelBuilder.Entity("Upload_ProfilePhoto.Models.PictureCommentsLike", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CommentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TimeStamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PictureCommentsLikes");
+                });
+
             modelBuilder.Entity("Upload_ProfilePhoto.Models.PictureLike", b =>
                 {
                     b.Property<int>("Id")

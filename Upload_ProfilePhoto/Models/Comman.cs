@@ -7,8 +7,6 @@ namespace Upload_ProfilePhoto.Models
 {
     public class Comman
     {
-
-
         public int Id { get; set; }
         public string First_Name { get; set; }
         public string Last_Name { get; set; }
@@ -56,4 +54,35 @@ namespace Upload_ProfilePhoto.Models
         public int PicutreId { get; set; }
         public int TotalCount { get; set; }
     }
+    public class CommentLikeDTO
+    {
+        public int CommentId { get; set; }
+        public bool CurrentUserLike { get; set; }
+        public int TotalLike { get; set; }
+
+    }
+    public class SuggesteFriendDTO
+    {
+        public int UserId { get; set; }
+        public string UserName { get; set; }
+        public string Profile { get; set; }
+    }
+    public class Result<T>
+    {
+        public Result()
+        {
+            Data = new List<T>();
+        }
+
+        /// <summary>
+        /// The outout if the operation
+        /// </summary>
+        public List<T> Data { get; set; }
+        /// <summary>
+        /// Total count of data
+        /// </summary>
+        public long Count { get; set; }
+    }
+
+
 }

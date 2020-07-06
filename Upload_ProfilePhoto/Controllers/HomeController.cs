@@ -158,6 +158,33 @@ namespace Upload_ProfilePhoto.Controllers
         {
             return Json(_commentRepository.GetLlCommentReplays());
         }
+        public JsonResult CommentLike(int CommentId, bool like)
+        {
+            var data = _commentRepository.CommentsLike(CommentId, like);
+            return Json(data);
+        }
+        public  JsonResult GetAllCommentLikes()
+        {
+            var data = _commentRepository.GetAllCommentLikes();
+            return Json(data);
+        }
+        public JsonResult DeleteYourPost(int pictureId)
+        {
+
+            var data = _accountRepository.DeletePost(pictureId);
+            string _ImageTobeDeleted = Path.Combine(_appEnvironment.WebRootPath, "ProfilePhoto\\", data.Picture);
+            if ((System.IO.File.Exists(_ImageTobeDeleted)))
+            {
+                System.IO.File.Delete(_ImageTobeDeleted);
+            }
+            return Json(data);
+        }
+        public JsonResult DeleteCommentReplay(int replyCommentId)
+        {
+            var data = _commentRepository.DeleteCommentReplay(replyCommentId);
+            return Json(data);
+        }
+       
         public IActionResult Privacy()
         {
             return View();

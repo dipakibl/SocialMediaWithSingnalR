@@ -13,11 +13,14 @@ namespace Upload_ProfilePhoto.Repositorys
         UserNotification CommentNotification(PictureComments comments);
         PictureComments DeleteComments(int commentid);
         PictureComments GetCommentsbyId(int commentId);
-        int PictureWiseCommentCount();
         UserNotification UpdateNotification(PictureComments comments);
         PictureCommentReplay PictureCommentReplay(PictureCommentReplay pictureCommentReplay);
         PictureCommentReplay GetCommentReplaybyId(int ReplayComId);
         List<CommentDTO> GetLlCommentReplays();
+        PictureCommentsLike CommentsLike(int commentId, bool like);
+        List<CommentLikeDTO> GetAllCommentLikes();
+        int GetCommentLikeCountCommentIdWise(int CommentId);
+        PictureCommentReplay DeleteCommentReplay(int ReplayCommentId);
 
 
 
