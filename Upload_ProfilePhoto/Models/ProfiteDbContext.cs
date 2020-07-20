@@ -18,6 +18,7 @@ namespace Upload_ProfilePhoto.Models
         public DbSet<PictureComments> PictureComments { get; set; }
         public DbSet<PictureCommentReplay> PictureCommentReplays { get; set; }
         public DbSet<PictureCommentsLike> PictureCommentsLikes { get; set; }
-
+        public DbSet<Friend> Friends { get; set; }
+        public DbSet<Messages> Messages { get; set; }
     }
 }

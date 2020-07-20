@@ -14,7 +14,7 @@ namespace Upload_ProfilePhoto.Repositorys
             var conn = new List<string>();
             lock (userConnectionMapLocker)
             {
-                string id = userConnectionMap.Where(a => a.Key == userId).Select(a => a.Key).FirstOrDefault(); ;
+                string id = userConnectionMap.Where(a => a.Key == userId).Select(a => a.Key).FirstOrDefault();
                 if (id!=null)
                 {
                     conn = userConnectionMap[userId];

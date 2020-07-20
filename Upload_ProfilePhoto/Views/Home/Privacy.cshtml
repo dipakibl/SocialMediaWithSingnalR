@@ -1,6 +1,42 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
-}
-<h1>@ViewData["Title"]</h1>
+﻿<!DOCTYPE html>
+<html>
 
-<p>Use this page to detail your site's privacy policy.</p>
+
+<body>
+
+    <div class="w3-container">
+        <h2>W3.CSS Modal Image Gallery</h2>
+        <p>Click on the images to display them in full size.</p>
+    </div>
+
+    <div class="w3-row-padding">
+        <div class="w3-container w3-third">
+            <img src="https://localhost:44329/ProfilePhoto/7255f0f78b42458294070451e4509e6e.jpg" style="width:100%;cursor:pointer"
+                 onclick="onClick(this)" class="w3-hover-opacity">
+        </div>
+        <div class="w3-container w3-third">
+            <img src="img_lights.jpg" style="width:100%;cursor:pointer"
+                 onclick="onClick(this)" class="w3-hover-opacity">
+        </div>
+        <div class="w3-container w3-third">
+            <img src="img_mountains.jpg" style="width:100%;cursor:pointer"
+                 onclick="onClick(this)" class="w3-hover-opacity">
+        </div>
+    </div>
+
+    <div id="modal01" class="w3-modal" onclick="this.style.display='none'">
+        <span class="w3-closebtn w3-hover-red w3-text-white w3-xxlarge w3-container w3-display-topright">&times;</span>
+        <div class="w3-modal-content w3-animate-zoom">
+            <img id="img01" style="width:100%">
+        </div>
+    </div>
+
+    <script>
+        function onClick(element) {
+            document.getElementById("img01").src = element.src;
+            document.getElementById("modal01").style.display = "block";
+        }
+    </script>
+
+</body>
+</html>

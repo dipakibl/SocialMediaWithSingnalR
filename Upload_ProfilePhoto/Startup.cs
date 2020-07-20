@@ -31,9 +31,10 @@ namespace Upload_ProfilePhoto
             services.AddDbContext<ProfiteDbContext>(options =>
           options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IAccountRepository, AccountRepository>();
-            services.AddScoped<IFriendRepository, FriendRepository>();
+            services.AddTransient<IFriendRepository, FriendRepository>();
+            services.AddTransient<IMessageRepository, MessageRepository>();
             services.AddTransient<NotificationHub>();
-            services.AddTransient<ICommentRepository, CommentRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<IUserConnectionManager, UserConnectionManager>();
             services.AddControllersWithViews();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -71,7 +72,6 @@ namespace Upload_ProfilePhoto
             });
             app.UseSignalR(routes =>
             {
-
                 routes.MapHub<NotificationHub>("/NotificationHub");
             });
         }

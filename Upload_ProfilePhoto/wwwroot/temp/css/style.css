@@ -497,6 +497,10 @@ nav {
 .notification-box.msg .nott-list .notfication-details {
     padding: 17px 20px 17px 20px;
 }
+   
+.listsss :hover {
+    background-color: #efefef;
+}
 
 .notification-box {
     position: absolute;
@@ -873,6 +877,13 @@ main {
         font-weight: 600;
         margin-bottom: 8px;
     }
+    .user-specs h3 a {
+        color: #000000;
+        font-size: 24px;
+        text-transform: capitalize;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
 
     .user-specs span {
         color: #686868;
@@ -973,6 +984,12 @@ main {
 }
 
     .sgt-text h4 {
+        color: #000000;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+     .sgt-text h4 a {
         color: #000000;
         font-size: 14px;
         font-weight: 600;
@@ -1273,7 +1290,15 @@ main {
     margin-left: 15px;
 }
 
-    .usy-name h3 {
+    .usy-name h3 a {
+        color: #000000;
+        font-size: 18px;
+        text-transform: capitalize;
+        font-weight: 600;
+        margin-bottom: 5px;
+        margin-top: 2px;
+    }
+    .usy-name h3 a {
         color: #000000;
         font-size: 18px;
         text-transform: capitalize;
@@ -1864,6 +1889,12 @@ main {
 }
 
     .comment h3 {
+        color: #000000;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    .comment h3 a {
         color: #000000;
         font-size: 16px;
         font-weight: 600;
@@ -4156,7 +4187,7 @@ a:hover {
         object-fit: cover;
     }
 
-    .company-up-info h3 {
+    .company-up-info h3  {
         color: #000000;
         font-size: 18px;
         font-weight: 600;
@@ -4164,6 +4195,19 @@ a:hover {
     }
 
     .company-up-info h4 {
+        color: #686868;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 21px;
+    }
+    .company-up-info h3 a {
+        color: #000000;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .company-up-info h4 a {
         color: #686868;
         font-size: 14px;
         font-weight: 500;
@@ -5485,10 +5529,12 @@ a:hover {
         .messages-list ul li {
             float: left;
             width: 100%;
-            padding: 20px;
             border-bottom: 1px solid #eeeeee;
             cursor: pointer;
         }
+            .messages-list ul li :hover {
+                background-color: #efefef;
+            }
 
             .messages-list ul li.active {
                 background-color: #efefef;
@@ -5498,6 +5544,7 @@ a:hover {
     float: left;
     position: relative;
     width: 100%;
+    padding:20px;
 }
 
 .usr-ms-img {
@@ -5528,8 +5575,8 @@ a:hover {
 
 .msg-notifc {
     position: absolute;
-    bottom: 0;
-    right: 0;
+    bottom: 35px;
+    right: 5px;
     width: 25px;
     height: 25px;
     -webkit-border-radius: 100px;
@@ -5564,6 +5611,11 @@ a:hover {
         font-size: 18px;
         font-weight: 600;
     }
+    .usr-mg-info h3 a {
+        color: #000000;
+        font-size: 18px;
+        font-weight: 600;
+    }
 
     .usr-mg-info p {
         color: #686868;
@@ -5580,7 +5632,7 @@ a:hover {
 .posted_time {
     position: absolute;
     top: 2px;
-    right: 0;
+    right: 5px;
     color: #b2b2b2;
     font-size: 14px;
 }
@@ -7879,7 +7931,7 @@ ul#myTab {
 
 .scrollbar {
     height: 250px;
-    overflow-y: auto;
+    overflow: auto;
     margin-bottom: 25px;
 }
 

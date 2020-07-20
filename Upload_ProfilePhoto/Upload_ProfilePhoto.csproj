@@ -16,6 +16,10 @@
     <Compile Remove="Migrations\20200701045218_UpdateCommentLikeTable01072020at1022am.Designer.cs" />
     <Compile Remove="Migrations\20200701045413_UpdateCommentLikeTable01072020at1024am.cs" />
     <Compile Remove="Migrations\20200701045413_UpdateCommentLikeTable01072020at1024am.Designer.cs" />
+    <Compile Remove="Migrations\20200707035016_AddFriendTable07072020at0919am.cs" />
+    <Compile Remove="Migrations\20200707035016_AddFriendTable07072020at0919am.Designer.cs" />
+    <Compile Remove="Migrations\20200708050705_UpdateUserNotificationTable.cs" />
+    <Compile Remove="Migrations\20200708050705_UpdateUserNotificationTable.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

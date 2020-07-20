@@ -17,15 +17,18 @@ namespace Upload_ProfilePhoto.Hubs
         private ISession _session => _httpContextAccessor.HttpContext.Session;
         private readonly IUserConnectionManager _userConnectionManager;
         private readonly IAccountRepository _accountRepository;
+        private readonly IMessageRepository _messageRepository;
         public NotificationHub(IHttpContextAccessor httpContextAccessor,
             IUserConnectionManager userConnection,
             IHubContext<NotificationHub> notificationHubContext,
-            IAccountRepository accountRepository)
+            IAccountRepository accountRepository,
+            IMessageRepository messageRepository)
         {
             _accountRepository = accountRepository;
             _notificationHubContext = notificationHubContext;
             _httpContextAccessor = httpContextAccessor;
             _userConnectionManager = userConnection;
+            _messageRepository = messageRepository;
         }
         public override Task OnConnectedAsync()
         {
@@ -57,6 +60,18 @@ namespace Upload_ProfilePhoto.Hubs
                         _notificationHubContext.Clients.Client(connectionId).SendAsync("sendToUser", userNotification.Type);
                     }
                 }
+        }
+        public void SendMessage(Messages messages)
+        {
+            var connections = _userConnectionManager.GetUserConnections(messages.FriendId.ToString());
+            var User = _accountRepository.GetUserById(messages.UserId);
+            string userAvtart = _accountRepository.GetPictureById(User.ProfilePictureId);
+            
+            foreach (var ConnectionId in connections)
+            {
+                
+                _notificationHubContext.Clients.Client(ConnectionId).SendAsync("sendToMessage", messages.Message, messages.FriendId, messages.UserId, userAvtart);
+            }
         }
     }
 }

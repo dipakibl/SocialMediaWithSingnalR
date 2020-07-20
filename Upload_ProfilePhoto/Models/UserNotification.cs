@@ -11,7 +11,7 @@ namespace Upload_ProfilePhoto.Models
         public int UserId { get; set; }
         public int FriendId { get; set; }
         public int PictureId { get; set; }
-        public string Type { get; set; }
+        public NotificationTypes Type { get; set; }
         public int CommentedId { get; set; }
         public bool IsRead { get; set; }
         public DateTime DateCreated { get; set; }

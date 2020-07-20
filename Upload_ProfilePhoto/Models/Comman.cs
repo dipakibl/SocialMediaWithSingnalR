@@ -29,9 +29,10 @@ namespace Upload_ProfilePhoto.Models
         public int NotfID { get; set; }
         public int Count { get; set; }
         public string UserName { get; set; }
+        public int FriendId { get; set; }
         public string UserImage { get; set; }
         public string Picture { get; set; }
-        public string Type { get; set; }
+        public NotificationTypes Type { get; set; }
         public bool IsRead { get; set; }
         public DateTime CreatedDate { get; set; }
         public int CommentId { get; set; }
@@ -66,6 +67,57 @@ namespace Upload_ProfilePhoto.Models
         public int UserId { get; set; }
         public string UserName { get; set; }
         public string Profile { get; set; }
+        public ConnectionStatus ConnectionStatus { get; set; }
+    }
+    public enum ConnectionStatus:short
+    {
+        NotYetConnection,
+        PendingConnection,
+        AlreadyInvited,
+        AlreadyConnection   
+    }
+    public enum NotificationTypes : short
+    {
+        Liked,
+        Commented,
+        FriendRequested,
+        AcceptFriendRequest
+    }
+    public class BasicUserDTO
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; }
+        public string Avtart { get; set; }
+        public ConnectionStatus ConnectionStatus { get; set; }
+        public int Count { get; set; }
+    }
+    public class FriendDTO
+    {
+        public int Id { get; set; }
+        public DateTime CreateDate { get; set; }
+        public BasicUserDTO FriendUser { get; set; }
+    }
+    public class MessageDTO
+    {
+        public int Id { get; set; }
+        public string Message { get; set; }
+        public bool IsRead { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public BasicUserDTO FriendUser { get; set; }
+        public bool IsRightMessage { get; set; }
+    }
+    public class LastMessageDTO
+    {
+        public int Id { get; set; }
+        public int LastMessageId { get; set; }
+        public string LastMessage { get; set; }
+        public bool IsRead { get; set; }
+        public bool IsOnline { get; set; }
+        public DateTime? MessageDatetime { get; set; }
+        public int LastSender { get; set; }
+        public BasicUserDTO Friend { get; set; }
+        public int Count { get; set; }
+
     }
     public class Result<T>
     {

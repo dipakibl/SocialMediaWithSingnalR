@@ -82,9 +82,19 @@ namespace Upload_ProfilePhoto.Controllers
             ModelState.Clear();
             return View(data);
         }
+        public IActionResult UserProfile(int id)
+        {
+            Comman data = _accountRepository.GetProfile(id);
+            return View(data);
+        }
         public JsonResult GetMyPicture()
         {
             var data = _accountRepository.MyAllPrifiles();
+            return Json(data);
+        }
+        public JsonResult GetUserProfile(int id)
+        {
+            var data = _accountRepository.MyAllProfilesById(id);
             return Json(data);
         }
         public JsonResult GetAllPicture()
@@ -124,7 +134,6 @@ namespace Upload_ProfilePhoto.Controllers
             var data = _accountRepository.UpdateNotification(NotifyId);
             return Json(data);
         }
-
         public JsonResult SendComment(PictureComments comments)
         {
             var data = _commentRepository.SentComment(comments);
@@ -184,7 +193,6 @@ namespace Upload_ProfilePhoto.Controllers
             var data = _commentRepository.DeleteCommentReplay(replyCommentId);
             return Json(data);
         }
-       
         public IActionResult Privacy()
         {
             return View();

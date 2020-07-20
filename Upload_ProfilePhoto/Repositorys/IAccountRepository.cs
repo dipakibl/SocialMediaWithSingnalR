@@ -8,13 +8,14 @@ namespace Upload_ProfilePhoto.Repositorys
 {
    public interface IAccountRepository
     {
-        void Save();
+        int Save();
         int InsertUser(User user);
         User Login(string email, string password);
         User GetUserById(int id);
         User UpdateProfile(string profilepictureId);
         Comman GetProfile(int id);
         List<Comman> MyAllPrifiles();
+        List<Comman> MyAllProfilesById(int id);
         List<Comman> GetAllPicture();
         Comman CurrentUserPicture();
         int Like(int id, bool like);
@@ -26,8 +27,6 @@ namespace Upload_ProfilePhoto.Repositorys
         int UpdateNotification(int notifyid);
         List<CommentCount> CommentCountwisePicture();
         ProfilesPictureGallery DeletePost(int PictureId);
-
-
-
+        BasicUserDTO GetUserByIdBasic(int id);
     }
 }

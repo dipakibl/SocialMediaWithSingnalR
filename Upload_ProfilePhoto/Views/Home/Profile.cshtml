@@ -18,6 +18,38 @@
     .unlikeclass {
         color: #212529;
     }
+    .w3-modal-content {
+        margin: auto;
+        background-color: #fff;
+        position: relative;
+        padding: 0;
+        outline: 0;
+        width: 600px;
+        animation: animatezoom 0.6s;
+    }
+
+    .w3-modal {
+        z-index: 3;
+        display: none;
+        padding-top: 100px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .closebutton {
+        color: #fff !important;
+        font-size: 36px !important;
+        padding: 0.01em 16px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        cursor: pointer;
+    }
 </style>
 <section class="cover-sec">
     <img src="~/temp/images/resources/cover-img.jpg" alt="">
@@ -59,15 +91,44 @@
                             <div class="main-ws-sec">
                                 <div class="user-tab-sec rewivew">
                                     <h3>@Model.First_Name @Model.Last_Name</h3>
+
                                     <div class="star-descp">
                                         <span>@Model.Email</span>
                                         <p id="user"></p>
                                     </div><!--star-descp end-->
+                                    <div class="tab-feed">
+                                        <ul>
+                                            <li data-tab="feed-dd" class="active">
+                                                <a href="#" title="">
+                                                    <img src="~/temp/images/ic1.png" alt="">
+                                                    <span>Feed</span>
+                                                </a>
+                                            </li>
+                                            <li data-tab="portfolio-dd">
+                                                <a href="#" title="">
+                                                    <img src="~/temp/images/ic3.png" alt="">
+                                                    <span>Photos</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div><!-- tab-feed end-->
                                 </div><!--user-tab-sec end-->
-                                <div id="myimages">
+                                <div class="product-feed-tab" id="portfolio-dd">
+                                    <div class="portfolio-gallery-sec">
+                                        <h3>Uploaded Photos Gallery</h3>
+                                        <div class="gallery_pf">
+                                            <div class="row" id="myAllPhotos">
 
+                                            </div>
+                                        </div><!--gallery_pf end-->
+                                    </div><!--portfolio-gallery-sec end-->
                                 </div>
-                                <!--product-feed-tab end-->
+
+                                <div class="product-feed-tab current" id="feed-dd">
+                                    <div id="myimages">
+
+                                    </div>
+                                </div>
 
                             </div><!--main-ws-sec end-->
                         </div>
@@ -78,6 +139,13 @@
 
     </main>
 </form>
+<div id="modal01" class="w3-modal" onclick="this.style.display='none'">
+    <span class="closebutton">&times;</span>
+    <div class="w3-modal-content">
+        <img id="img01" style="width:100%">
+    </div>
+</div>
+
 
 <link href="~/lib/toastr.js/toastr.css" rel="stylesheet" />
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -97,16 +165,25 @@
             dataType: 'json',
             success: function (result) {
                 $.each(result, function (i, l) {
-                    $("#myimages").append('<div class="product-feed-tab current" id="feed-dd"><div class="posts-section"><div class="post-bar"><div class="post_topbar"><div class="usy-dt"><img class="imgstyle" src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt=""><div class="usy-name"><h3>' + l.first_Name + ' ' + l.last_Name + '</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt="">'+ConvertDate(l.dateCreated)+' ago</span></div></div></div><div class="job_descp"><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" /></div><div class="job-status-bar"><ul class="like-com"><li><a  id="likeid' + l.picureid + '" class="unlikeclass"  onclick="LikeProce(' + l.picureid + ')"><i class="fas fa-heart"></i> Like</a><span style="margin: -1px 0px 0px 0px;" id="' + l.picureid + '"></span></li></ul></div></div><div class="ed-opts"><a title="" class="ed-opts-open" onclick="$( '+"'"+'#DeletePostbutton'+l.picureid+''+"'"+').toggle()"><i class="la la-ellipsis-v"></i></a><ul class="ed-options active" id="DeletePostbutton'+l.picureid+'" style="display: none;"><li><a href="#" title="">Close</a></li></ul></div></div></div>')
+                    $("#myimages").empty();
+                    $("#myAllPhotos").empty();
+                })
+                $.each(result, function (i, l) {
+                    $("#myimages").append('<div class="posts-section"><div class="post-bar"><div class="post_topbar"><div class="usy-dt"><img class="imgstyle" src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt=""><div class="usy-name"><h3>' + l.first_Name + ' ' + l.last_Name + '</h3><span><img src="https://localhost:44329/temp/images/clock.png" alt="">' + ConvertDate(l.dateCreated) + ' ago</span></div></div><div class="ed-opts"  id="disabledId' + l.picureid + '" ><a title="" class="ed-opts-open" onclick="$( ' + "'" + '#DeletePostbutton' + l.picureid + '' + "'" + ').toggle()"><i class="la la-ellipsis-v"></i></a><ul class="Del-Post" id="DeletePostbutton' + l.picureid + '" style="display: none;height: 40px;"><li style="margin: -10px 0 0 10px;"><a href="#" title=""  onclick="DeletePost(' + l.picureid + ')">Delete Post</a></li></ul></div> </div><div class="job_descp"><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" /></div><div class="job-status-bar"><ul class="like-com"><li><a  id="likeid' + l.picureid + '" class="unlikeclass"  onclick="LikeProce(' + l.picureid + ')"><i class="fas fa-heart"></i> Like</a><span style="margin: -1px 0px 0px 0px;" id="' + l.picureid + '"></span></li><li  onclick="$( ' + "'" + '#commentsection' + l.picureid + '' + "'" + ').toggle()"><a href="javascript:void(0)" class="com" ><i class="fas fa-comment-alt"></i> Comment <b id="commentcount' + l.picureid + '"></b> </a></li></ul></div><div id="commentsection' + l.picureid + '" style="display: none;" class="comment-section"><hr style="border-top: 3px solid #e5e5e5 !important;"><div class="comment-sec scrollbarcomment-sec scrollbar" id="style-4"><ul id="commentlist' + l.picureid + '"></ul></div><div class="post-comment"><div style="margin: 0 0 5px 50px;" id="Editing'+l.picureid+'"></div><div class="cm_img"><img src="https://localhost:44329/ProfilePhoto/' + l.currentProfile + '" alt="" style="height: 40px;width: 40px;border-radius: 100px;"></div><div class="comment_box"><form id="form"><input type="hidden" id="txtCommentReplayId'+l.picureid+'" /><input type="hidden" id="txtCommentId' + l.picureid + '" value=""><input type="hidden" id="txtpictureid' + l.picureid + '" value="' + l.picureid + '" /><input type="text" required="required" id="txtComment' + l.picureid + '" placeholder="Post a comment" style="width: 320px;"><button type="button" id="changeonclick'+l.picureid+'" onclick="SendComment(' + l.picureid + ')">Send</button></form></div></div></div>')
+                    $("#myAllPhotos").append(' <div class="col-lg-4 col-md-4 col-sm-6 col-6"><div class="gallery_pt"><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" alt="" style="cursor:zoom-in" onclick="onClick(this)"><a href="javascript:void(0)" title=""><img src="https://localhost:44329/ProfilePhoto/' + l.pictureName + '" alt="" onclick="onClick(this)"></a></div><!--gallery_pt end--></div>')
                 })
 
             }
         });
     }
+    function onClick(element) {
+        document.getElementById("img01").src = element.src;
+        document.getElementById("modal01").style.display = "block";
+    }
     var loadFile = function (event) {
         $("#btnshow").text('');
         var image = document.getElementById('output');
-        image.src = URL.createObjectURL(event.target.files[0]);
+        image.src = URL.createObjectURL(event.target.files[0])
         if (image != null) {
             $("#btnshow").append('<button type="submit" class="btn btn-primary button">Save Profile Picture</button>');
         }
@@ -137,40 +214,40 @@
         });
 
     }
-      function ConvertDate(dateStr) {
+    function ConvertDate(dateStr) {
         var date = new Date(dateStr);
         var seconds = Math.floor((new Date() - date) / 1000);
-  var interval = Math.floor(seconds / 31536000);
-  if (interval > 1) {
-    return interval + " years";
-  }
-  interval = Math.floor(seconds / 2592000);
-          if (interval > 1) {
-              if (interval > 12) {
-                  return  "1 years";
-              }
-    return interval + " months";
-  }
-  interval = Math.floor(seconds / 86400);
-          if (interval > 1) {
-      if (interval > 31) {
-                  return  "1 months";
-              }
-    return interval + " days";
-  }
-  interval = Math.floor(seconds / 3600);
-  if (interval > 1) {
-    return interval + " hours";
-  }
-  interval = Math.floor(seconds / 60);
-          if (interval > 1) {
-      if (interval > 60) {
-                  return  "1 hours";
-              }
-    return interval + " minutes";
-  }
-  return Math.floor(seconds) + " seconds";
-        
+        var interval = Math.floor(seconds / 31536000);
+        if (interval > 1) {
+            return interval + " years";
+        }
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) {
+            if (interval > 12) {
+                return "1 years";
+            }
+            return interval + " months";
+        }
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) {
+            if (interval > 31) {
+                return "1 months";
+            }
+            return interval + " days";
+        }
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) {
+            return interval + " hours";
+        }
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) {
+            if (interval > 60) {
+                return "1 hours";
+            }
+            return interval + " minutes";
+        }
+        return Math.floor(seconds) + " seconds";
+
     }
     function GetAllLiker() {
         $.ajax({
@@ -192,6 +269,42 @@
             }
         });
     }
+    function DeletePost(id) {
+        $.confirm({
+            title: 'Confirm!',
+            content: 'Are you sure you want to delete this Post?',
+            buttons: {
+                confirm: function () {
+                    $.ajax({
+                        async: true,
+                        type: "POST",
+                        url: '/Home/DeleteYourPost',
+                        data: {
+                            pictureId: id
+                        },
+                        success: function (result) {
+                            showprofiles();
+                            GetNotificaiton();
+                            toastr.success("Deleted your selected Post.")
+
+                        },
+                        error: function () {
+                            toastr.error("Error, Unsuccess in deleting this Post.")
+                        }
+                    });
+
+                },
+                cancel: function () {
+
+                },
+            }
+
+        });
+    }
+     function scrollDown() {
+        var objDiv = $( "#style-4" ).get( 0 );
+        objDiv.scrollTop = objDiv.scrollHeight;
+        }
 </script>
 
 @if (ViewBag.Sucess == "Profile Save Successfull..!")

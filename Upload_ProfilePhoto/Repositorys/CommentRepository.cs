@@ -86,14 +86,14 @@ namespace Upload_ProfilePhoto.Repositorys
             string id = _session.GetString("UserId");
             int currUser = Convert.ToInt32(id);
             var _File = _context.ProfilesPictureGalleries.Where(a => a.Id == comments.PictureId).FirstOrDefault();
-            var _notify = _context.UserNotifications.Where(a => a.PictureId == comments.PictureId && a.FriendId == currUser && a.CommentedId == comments.Id && a.Type == "Commented on your photo").FirstOrDefault();
+            var _notify = _context.UserNotifications.Where(a => a.PictureId == comments.PictureId && a.FriendId == currUser && a.CommentedId == comments.Id && a.Type == NotificationTypes.Commented).FirstOrDefault();
             UserNotification notif = new UserNotification();
             if (_notify == null)
             {
                 notif.CommentedId = comments.Id;
                 notif.UserId = _File.UserId;
                 notif.FriendId = currUser;
-                notif.Type = "Commented on your photo";
+                notif.Type = NotificationTypes.Commented;
                 notif.PictureId = _File.Id;
                 notif.IsRead = false;
                 notif.DateCreated = DateTime.Now;
@@ -104,7 +104,7 @@ namespace Upload_ProfilePhoto.Repositorys
                 notif = _notify;
                 notif.DateModified = DateTime.Now;
                 notif.IsRead = false;
-                notif.Type = "Commented on your photo";
+                notif.Type = NotificationTypes.Commented;
                 notif.DateDeleted = null;
                 _context.UserNotifications.Update(notif);
             }
